@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Enviar Mensagem para Discord</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2c2f33;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #23272a;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 450px;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #7289da;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      background-color: #99aab5;
+      color: #23272a;
+    }
+
+    button {
+      background-color: #7289da;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5b6eae;
+    }
+
+    p#response {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mensagem para o Discord</h1>
+    <textarea id="message" placeholder="Escreva sua mensagem aqui..."></textarea>
+    <input type="text" id="imageUrl" placeholder="URL da imagem (opcional)">
+    <button onclick="sendMessage()">Enviar</button>
+    <p id="response"></p>
+  </div>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1362865112985239763/br_gCfTaUKJ98HmqUQ7yykXyWZ347qZXjdy9wBVkJA3upu0EjqjknM3I3W82tHphjTKu";
+
+    function sendMessage() {
+      const message = document.getElementById("message").value.trim();
+      const imageUrl = document.getElementById("imageUrl").value.trim();
+      const responseEl = document.getElementById("response");
+
+      if (!message) {
+        responseEl.textContent = "Por favor, escreva uma mensagem.";
+        responseEl.style.color = "#f04747";
+        return;
+      }
+
+      const payload = {
+        username: "SiteBot",
+        avatar_url: "https://i.imgur.com/AfFp7pu.png",
+        content: message
+      };
+
+      // Se tiver imagem, usa embed
+      if (imageUrl) {
+        payload.embeds = [{
+          image: {
+            url: imageUrl
+          },
+          color: 3447003
+        }];
+      }
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (response.ok) {
+          responseEl.textContent = "Mensagem enviada com sucesso!";
+          responseEl.style.color = "#43b581";
+          document.getElementById("message").value = "";
+          document.getElementById("imageUrl").value = "";
+        } else {
+          responseEl.textContent = "Erro ao enviar a mensagem.";
+          responseEl.style.color = "#f04747";
+        }
+      })
+      .catch(error => {
+        responseEl.textContent = "Erro de rede ou webhook inválido.";
+        responseEl.style.color = "#f04747";
+        console.error(error);
+      });
+    }
+  </script>
+</body>
+</html>
